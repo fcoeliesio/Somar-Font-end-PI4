@@ -8,7 +8,6 @@ export async function handleLogin(email, password) {
     });
     return response.data; // { accessToken, refreshToken }
   } catch (error) {
-    // Checa se o erro está relacionado a conexão com o banco de dados
     if (error.response?.status === 500) {
       throw new Error('Não foi possível conectar ao banco de dados. Por favor, tente novamente mais tarde.');
     } else {

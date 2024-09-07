@@ -2,10 +2,10 @@ import React, { useState, useReducer } from "react";
 import {
   View,
   Text,
-  ActivityIndicator,
   Alert,
   StyleSheet,
   Image,
+  TouchableOpacity,
 } from "react-native";
 import { Input, Button } from "@rneui/themed";
 import { userReducer, initialState } from "../models/userModel";
@@ -18,12 +18,7 @@ export default function Auth({ navigation }) {
   const login = async () => {
     setLoading(true);
     try {
-      console.log("Tentando autenticar com:", state.email, state.password);
-
       const tokens = await handleLogin(state.email, state.password);
-
-      console.log("Tokens recebidos:", tokens);
-
       if (tokens && tokens.accessToken) {
         dispatch({ type: "SET_TOKENS", payload: tokens });
         setLoading(false);
@@ -33,7 +28,6 @@ export default function Auth({ navigation }) {
       }
     } catch (error) {
       setLoading(false);
-      console.log("Erro durante o login:", error.message);
       Alert.alert("Erro", error.message || "Falha ao fazer login");
     }
   };
@@ -53,7 +47,11 @@ export default function Auth({ navigation }) {
           }
           placeholder="Digite seu e-mail"
           value={state.email}
+          inputContainerStyle={styles.inputContainerStyle}
           inputStyle={styles.input}
+          placeholderTextColor="#A6A6A6"
+          leftIconContainerStyle={styles.iconContainer}
+          containerStyle={styles.inputFieldContainer}
         />
       </View>
       <View style={styles.inputContainer}>
@@ -65,38 +63,95 @@ export default function Auth({ navigation }) {
           placeholder="Digite sua senha"
           secureTextEntry
           value={state.password}
+          inputContainerStyle={styles.inputContainerStyle}
           inputStyle={styles.input}
+          placeholderTextColor="#A6A6A6"
+          leftIconContainerStyle={styles.iconContainer}
+          containerStyle={styles.inputFieldContainer}
         />
       </View>
-      <Button title="Entrar" onPress={login} loading={loading} />
+      <Button
+        title="Entrar"
+        onPress={login}
+        loading={loading}
+        buttonStyle={styles.button}
+        titleStyle={styles.buttonTitle}
+        containerStyle={styles.buttonContainer}
+        loadingProps={{ color: '#FFFFFF' }}
+      />
+      <TouchableOpacity
+        style={styles.registerLink}
+        onPress={() => navigation.navigate("Register")}
+      >
+        <Text style={styles.registerText}>Não tem uma conta? Cadastre-se</Text>
+      </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  inputContainer: {
-    flexDirection: "row",
-    borderBottomWidth: 2,
-    borderBottomColor: "#2F2F2F",
-    alignSelf: "stretch",
-    marginHorizontal: 32,
-    marginVertical: 8,
-    paddingBottom: 8,
-    gap: 8,
-  },
-  input: {
-    fontSize: 18,
-    color: "#A6A6A6",
-  },
   container: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     marginVertical: 64,
     gap: 32,
+    paddingHorizontal: 20,
   },
   logo: {
     width: 127,
     height: 108,
+    marginBottom: 32,
+  },
+  inputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginVertical: 8,
+    width: '100%',
+  },
+  inputFieldContainer: {
+    flex: 1,
+    marginLeft: 8,
+  },
+  inputContainerStyle: {
+    borderBottomWidth: 0,
+    backgroundColor: "#F5F5F5",
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#D1D1D1",
+  },
+  input: {
+    fontSize: 16,
+    color: "#333333",
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+  },
+  iconContainer: {
+    marginRight: 8,
+  },
+  button: {
+    backgroundColor: "#007BFF",
+    borderRadius: 8,
+    height: 50,
+    justifyContent: "center",
+  },
+  buttonTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  buttonContainer: {
+    marginTop: 16,
+    width: '100%',
+  },
+  registerLink: {
+    marginTop: 16,
+    padding: 10,
+    alignItems: 'center', // Centraliza o conteúdo dentro do TouchableOpacity
+  },
+  registerText: {
+    color: "#007BFF",
+    textDecorationLine: "underline",
+    fontSize: 16,
   },
 });
