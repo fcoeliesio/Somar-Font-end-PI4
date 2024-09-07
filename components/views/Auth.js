@@ -68,7 +68,7 @@ export default function Auth({ navigation }) {
           inputStyle={styles.input}
         />
       </View>
-      <Button title="Autenticar" onPress={login} loading={loading} />
+      <Button title="Entrar" onPress={login} loading={loading} />
     </View>
   );
 }
