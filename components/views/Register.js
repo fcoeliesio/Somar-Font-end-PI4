@@ -11,7 +11,17 @@ export default function Register({ navigation }) {
   const [lastName, setLastName] = useState('');
   const [loading, setLoading] = useState(false);
 
+  const isValidEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
   const register = async () => {
+    if (!isValidEmail(email)) {
+      Alert.alert('Erro', 'E-mail inválido');
+      return;
+    }
+
     if (password !== confirmPassword) {
       Alert.alert('Erro', 'As senhas não coincidem');
       return;
@@ -172,3 +182,4 @@ const styles = StyleSheet.create({
     marginTop: 32,
   },
 });
+ 

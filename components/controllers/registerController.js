@@ -1,5 +1,6 @@
 import { api } from '../config/api';
 
+
 export async function handleRegister({ email, password, firstName, lastName }) {
   try {
     const response = await api.post('auth/sign-up', {
