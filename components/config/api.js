@@ -2,8 +2,9 @@ import axios from 'axios';
 
 export const api = axios.create({
   baseURL: 'https://pi-4-back-end.onrender.com/api/v1/',
-  timeout: 10000,
+  timeout: 30000, 
 });
+
 
 // Interceptor para capturar erros
 api.interceptors.response.use(
