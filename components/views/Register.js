@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Text, View, StyleSheet, TouchableOpacity } from 'react-native';
 import { Input, Button, Avatar, Icon } from '@rneui/themed';
 import { launchImageLibrary } from 'react-native-image-picker';
-import { signup } from '../controllers/authController';
+import { signup } from '../controllers/registerController';
 
 export default function Register({navigation}) {
   const [Nome, setNome] = useState('');
