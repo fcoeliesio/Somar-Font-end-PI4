@@ -11,6 +11,7 @@ export default function Register({navigation}) {
   const [Senha, setSenha] = useState('');
   const [Confirmar, setConfirmar] = useState('');
   const [Foto, setFoto] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const handleChoosePhoto = () => {
     launchImageLibrary({ noData: true }, (response) => {
@@ -27,23 +28,23 @@ export default function Register({navigation}) {
       return;
     }
 
+    setLoading(true); // Inicia o carregamento
     try {
-      // Dados do usuário para serem enviados na API
       const userData = {
         nome: Nome,
         sobrenome: Sobrenome,
         email: Email,
         password: Senha,
-        foto: Foto, // Você pode enviar a URL da foto se for relevante para o cadastro
+        foto: Foto,
       };
 
-      // Chama a função de signup
-      const response = await signup(userData);
+      await signup(userData);
       Alert.alert('Sucesso', 'Cadastro realizado com sucesso!');
-
-      // Aqui você pode redirecionar o usuário ou limpar os campos
+      navigation.navigate('Auth'); // Redireciona para a tela de Login
     } catch (error) {
       Alert.alert('Erro', error.message || 'Erro ao realizar cadastro.');
+    } finally {
+      setLoading(false); // Finaliza o carregamento
     }
   };
 
@@ -101,10 +102,11 @@ export default function Register({navigation}) {
           inputStyle={styles.input}
         />
         <Button
-          title="Registrar"
+          title={loading ? 'Carregando...' : 'Registrar'}
           containerStyle={styles.buttonContainer}
           buttonStyle={styles.button}
           onPress={handleRegister} // Chama a função de registro ao clicar no botão
+          disabled={loading}
         />
       </View>
     </View>

@@ -1,13 +1,13 @@
 import { api } from '../config/api';
 
-
-export async function handleRegister({ email, password, firstName, lastName }) {
+export async function signup({ nome, sobrenome, email, password, foto }) {
   try {
     const response = await api.post('auth/sign-up', {
+      nome,
+      sobrenome,
       email,
       password,
-      firstName,
-      lastName,
+      foto, // Inclui a foto se for necessário no backend
     });
     return response.data;
   } catch (error) {
