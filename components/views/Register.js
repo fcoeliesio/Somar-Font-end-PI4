@@ -1,125 +1,123 @@
 import React, { useState } from 'react';
-import { View, Text, Alert, StyleSheet, Image, TouchableOpacity } from 'react-native';
-import { Input, Button } from '@rneui/themed';
-import { handleRegister } from '../controllers/registerController';
+import { Text, View, StyleSheet, TouchableOpacity } from 'react-native';
+import { Input, Button, Avatar, Icon } from '@rneui/themed';
+import { launchImageLibrary } from 'react-native-image-picker';
+import { signup } from '../controllers/authController';
 
-export default function Register({ navigation }) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [loading, setLoading] = useState(false);
+export default function Register({navigation}) {
+  const [Nome, setNome] = useState('');
+  const [Sobrenome, setSobrenome] = useState('');
+  const [Email, setEmail] = useState('');
+  const [Senha, setSenha] = useState('');
+  const [Confirmar, setConfirmar] = useState('');
+  const [Foto, setFoto] = useState(null);
 
-  const isValidEmail = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
+  
+  const headerBackPress = () => {
+    alert('Voltar');
   };
 
-  const register = async () => {
-    if (!isValidEmail(email)) {
-      Alert.alert('Erro', 'E-mail inválido');
+  const handleChoosePhoto = () => {
+    launchImageLibrary({ noData: true }, (response) => {
+      if (response.assets) {
+        setFoto(response.assets[0].uri);
+      }
+    });
+  };
+
+  const handleRegister = async () => {
+    // Verifica se as senhas coincidem
+    if (Senha !== Confirmar) {
+      Alert.alert('Erro', 'As senhas não coincidem.');
       return;
     }
 
-    if (password !== confirmPassword) {
-      Alert.alert('Erro', 'As senhas não coincidem');
-      return;
-    }
-
-    setLoading(true);
     try {
-      await handleRegister({
-        email,
-        password,
-        firstName,
-        lastName,
-      });
-      setLoading(false);
-      Alert.alert('Sucesso', 'Registro realizado com sucesso!');
-      navigation.navigate('Auth');
+      // Dados do usuário para serem enviados na API
+      const userData = {
+        nome: Nome,
+        sobrenome: Sobrenome,
+        email: Email,
+        password: Senha,
+        foto: Foto, // Você pode enviar a URL da foto se for relevante para o cadastro
+      };
+
+      // Chama a função de signup
+      const response = await signup(userData);
+      Alert.alert('Sucesso', 'Cadastro realizado com sucesso!');
+
+      // Aqui você pode redirecionar o usuário ou limpar os campos
     } catch (error) {
-      setLoading(false);
-      Alert.alert('Erro', error.message || 'Falha ao registrar');
+      Alert.alert('Erro', error.message || 'Erro ao realizar cadastro.');
     }
   };
+
 
   return (
     <View style={styles.container}>
-      <Image
-        style={styles.logo}
-        source={require('../../assets/logo.png')}
-        resizeMode="contain"
-      />
-      <View style={styles.inputContainer}>
-        <Input
-          onChangeText={setFirstName}
-          placeholder="Digite seu nome"
-          value={firstName}
-          inputContainerStyle={styles.inputContainerStyle}
-          inputStyle={styles.input}
-          placeholderTextColor="#A6A6A6"
-        />
+      <View style={styles.header}>
+        <TouchableOpacity onPress={headerBackPress} style={styles.backButton}>
+          <Icon name="arrow-back" type="material" color="white" size={30} />
+        </TouchableOpacity>
+        <Text style={styles.headerText}>Criar Conta</Text>
       </View>
-      <View style={styles.inputContainer}>
+
+      <TouchableOpacity onPress={handleChoosePhoto} style={styles.avatarContainer}>
+        <Avatar
+          size={100}
+          rounded
+          containerStyle={styles.avatar}
+          source={Foto ? { uri: Foto } : null}
+          icon={{ name: 'photo-library', type: 'material' }}
+        >
+          <Avatar.Accessory size={24} />
+        </Avatar>
+      </TouchableOpacity>
+      <Text style={styles.headerTextAvatar}>Foto</Text>
+      <View style={styles.body}>
+        <Text style={styles.label}>Nome:</Text>
         <Input
-          onChangeText={setLastName}
-          placeholder="Digite seu sobrenome"
-          value={lastName}
-          inputContainerStyle={styles.inputContainerStyle}
+          onChangeText={setNome}
+          placeholder="Digite seu Nome"
+          containerStyle={styles.inputContainer}
           inputStyle={styles.input}
-          placeholderTextColor="#A6A6A6"
         />
-      </View>
-      <View style={styles.inputContainer}>
+        <Text style={styles.label}>Sobrenome:</Text>
+        <Input
+          onChangeText={setSobrenome}
+          placeholder="Digite seu Sobrenome"
+          containerStyle={styles.inputContainer}
+          inputStyle={styles.input}
+        />
+        <Text style={styles.label}>Email:</Text>
         <Input
           onChangeText={setEmail}
-          placeholder="Digite seu e-mail"
-          value={email}
-          inputContainerStyle={styles.inputContainerStyle}
+          placeholder="Digite seu Email"
+          containerStyle={styles.inputContainer}
           inputStyle={styles.input}
-          placeholderTextColor="#A6A6A6"
         />
-      </View>
-      <View style={styles.inputContainer}>
+        <Text style={styles.label}>Senha:</Text>
         <Input
-          onChangeText={setPassword}
-          placeholder="Digite sua senha"
+          onChangeText={setSenha}
+          placeholder="Digite sua Senha"
           secureTextEntry
-          value={password}
-          inputContainerStyle={styles.inputContainerStyle}
+          containerStyle={styles.inputContainer}
           inputStyle={styles.input}
-          placeholderTextColor="#A6A6A6"
         />
-      </View>
-      <View style={styles.inputContainer}>
+        <Text style={styles.label}>Confirmar Senha:</Text>
         <Input
-          onChangeText={setConfirmPassword}
-          placeholder="Confirme sua senha"
+          onChangeText={setConfirmar}
+          placeholder="Digite sua Senha"
           secureTextEntry
-          value={confirmPassword}
-          inputContainerStyle={styles.inputContainerStyle}
+          containerStyle={styles.inputContainer}
           inputStyle={styles.input}
-          placeholderTextColor="#A6A6A6"
         />
-      </View>
-      <Button
-        title="Registrar"
-        onPress={register}
-        loading={loading}
-        buttonStyle={styles.button}
-        titleStyle={styles.buttonTitle}
-        containerStyle={styles.buttonContainer}
-        loadingProps={{ color: '#FFFFFF' }}
-      />
-      <TouchableOpacity
-        style={styles.loginLink}
-        onPress={() => navigation.navigate('Auth')}
-      >
-        <Text style={styles.loginText}>Já tem uma conta? Faça login</Text>
-      </TouchableOpacity>
-      <View style={styles.footer}>
-        {/* Footer para receber outras informações no futuro */}
+        <Button
+          title="Registrar"
+          containerStyle={styles.buttonContainer}
+          buttonStyle={styles.button}
+          onPress={handleRegister} // Chama a função de registro ao clicar no botão
+        />
       </View>
     </View>
   );
@@ -129,57 +127,65 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f5f5f5',
-    padding: 16,
+    backgroundColor: '#fff',
   },
-  logo: {
-    width: 127,
-    height: 108,
-    marginBottom: 16,
+  header: {
+    height: 100,
+    backgroundColor: '#4169e1',
+    paddingHorizontal: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+  },
+  headerText: {
+    fontSize: 20,
+    color: 'white',
+    fontWeight: 'bold',
+    paddingTop:20,
+    alignContent:'center',
+  },
+  backButton: {
+    position: 'absolute',
+    left: 15,
+    paddingTop:20,
+    alignContent:'center',
+  },
+  avatarContainer: {
+    alignSelf: 'center',
+    marginTop: 20,
+  },
+  avatar: {
+    backgroundColor: '#4169e1',
+  },
+  headerTextAvatar: {
+    textAlign: 'center',
+    fontSize: 15,
+    color: '#333',
+  },
+  body: {
+    flex: 10,
+    width: '100%',
+    padding: 20,
+  },
+  label: {
+    fontSize: 15,
+    color: '#333',
+    paddingLeft: 10,
   },
   inputContainer: {
     width: '100%',
-    marginVertical: 8,
-  },
-  inputContainerStyle: {
-    borderBottomWidth: 0,
-    backgroundColor: '#F5F5F5',
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#D1D1D1',
+    marginBottom: 2,
   },
   input: {
-    fontSize: 18,
-    color: '#333',
-    paddingHorizontal: 12,
+    borderWidth: 1,
+    borderRadius: 8,
+    fontSize: 15,
+    padding: 10,
   },
   button: {
-    backgroundColor: '#007BFF',
+    width: 100,
+    alignSelf: 'center',
+    borderWidth: 1,
     borderRadius: 8,
-    height: 50,
-    justifyContent: 'center',
-  },
-  buttonTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  buttonContainer: {
-    width: '100%',
-    marginTop: 16,
-  },
-  loginLink: {
-    marginTop: 16,
-  },
-  loginText: {
-    color: '#007BFF',
-    textDecorationLine: 'underline',
-    fontSize: 16,
-    paddingHorizontal: 8,
-  },
-  footer: {
-    marginTop: 32,
   },
 });
- 
