@@ -12,11 +12,6 @@ export default function Register({navigation}) {
   const [Confirmar, setConfirmar] = useState('');
   const [Foto, setFoto] = useState(null);
 
-  
-  const headerBackPress = () => {
-    alert('Voltar');
-  };
-
   const handleChoosePhoto = () => {
     launchImageLibrary({ noData: true }, (response) => {
       if (response.assets) {
@@ -55,13 +50,6 @@ export default function Register({navigation}) {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={headerBackPress} style={styles.backButton}>
-          <Icon name="arrow-back" type="material" color="white" size={30} />
-        </TouchableOpacity>
-        <Text style={styles.headerText}>Criar Conta</Text>
-      </View>
-
       <TouchableOpacity onPress={handleChoosePhoto} style={styles.avatarContainer}>
         <Avatar
           size={100}
@@ -128,27 +116,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     backgroundColor: '#fff',
-  },
-  header: {
-    height: 100,
-    backgroundColor: '#4169e1',
-    paddingHorizontal: 15,
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'row',
-  },
-  headerText: {
-    fontSize: 20,
-    color: 'white',
-    fontWeight: 'bold',
-    paddingTop:20,
-    alignContent:'center',
-  },
-  backButton: {
-    position: 'absolute',
-    left: 15,
-    paddingTop:20,
-    alignContent:'center',
   },
   avatarContainer: {
     alignSelf: 'center',
