@@ -21,6 +21,8 @@ export default function Register({navigation}) {
     });
   };
 
+  
+
   const handleRegister = async () => {
     // Verifica se as senhas coincidem
     if (Senha !== Confirmar) {

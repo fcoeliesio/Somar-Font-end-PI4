@@ -3,10 +3,10 @@ import { api } from '../config/api';
 export async function signup({ email, password, firstName, lastName }) {
   try {
     const response = await api.post('auth/sign-up', {
-      email,
-      password,
       firstName,
       lastName,
+      email,
+      password,
     });
     return response.data;
   } catch (error) {

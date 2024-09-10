@@ -1,10 +1,10 @@
 export const initialState = {
+  firstName: '', 
+  lastName: '', 
   email: '',
   password: '',
   accessToken: null,
-  refreshToken: null,
-  firstName: '', 
-  lastName: '',   
+  refreshToken: null,  
 };
 
 export function userReducer(state, action) {
