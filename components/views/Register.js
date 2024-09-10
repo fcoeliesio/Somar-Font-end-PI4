@@ -31,11 +31,10 @@ export default function Register({navigation}) {
     setLoading(true); // Inicia o carregamento
     try {
       const userData = {
-        nome: Nome,
-        sobrenome: Sobrenome,
+        firstName: Nome,
+        lastName: Sobrenome,
         email: Email,
         password: Senha,
-        foto: Foto,
       };
 
       await signup(userData);
