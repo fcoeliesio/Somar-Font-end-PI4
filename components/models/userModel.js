@@ -1,5 +1,5 @@
 export const initialState = {
-  firstName: '', 
+  firsName: '', 
   lastName: '', 
   email: '',
   password: '',
@@ -10,7 +10,7 @@ export const initialState = {
 export function userReducer(state, action) {
   switch (action.type) {
     case 'SET_FIRST_NAME':  
-      return { ...state, firstName: action.payload };  
+      return { ...state, firsName: action.payload };  
     case 'SET_LAST_NAME':    
       return { ...state, lastName: action.payload };  
     case 'SET_EMAIL':

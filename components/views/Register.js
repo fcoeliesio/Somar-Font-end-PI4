@@ -1,15 +1,13 @@
-import React, { useState } from 'react';
-import { Text, View, StyleSheet, TouchableOpacity } from 'react-native';
-import { Input, Button, Avatar, Icon } from '@rneui/themed';
+import React, { useState, useReducer } from 'react';
+import { Text, View, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { Input, Button, Avatar } from '@rneui/themed';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { signup } from '../controllers/registerController';
+import { userReducer, initialState } from '../models/userModel'; // Importa o modelo de usuário
 
-export default function Register({navigation}) {
-  const [Nome, setNome] = useState('');
-  const [Sobrenome, setSobrenome] = useState('');
-  const [Email, setEmail] = useState('');
-  const [Senha, setSenha] = useState('');
-  const [Confirmar, setConfirmar] = useState('');
+export default function Register({ navigation }) {
+  const [state, dispatch] = useReducer(userReducer, initialState); // Usa o userReducer para gerenciar o estado
+  const [Confirmar, setConfirmar] = useState(''); // Estado separado para confirmar senha
   const [Foto, setFoto] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -21,34 +19,34 @@ export default function Register({navigation}) {
     });
   };
 
-  
-
   const handleRegister = async () => {
-    // Verifica se as senhas coincidem
-    if (Senha !== Confirmar) {
+    if (state.password !== Confirmar) {
       Alert.alert('Erro', 'As senhas não coincidem.');
       return;
     }
 
-    setLoading(true); // Inicia o carregamento
+    setLoading(true);
     try {
       const userData = {
-        firstName: Nome,
-        lastName: Sobrenome,
-        email: Email,
-        password: Senha,
+        firsName: state.firsName,
+        lastName: state.lastName,
+        email: state.email,
+        password: state.password,
       };
 
-      await signup(userData);
-      Alert.alert('Sucesso', 'Cadastro realizado com sucesso!');
-      navigation.navigate('Auth'); // Redireciona para a tela de Login
+      const response = await signup(userData); // Chama a função signup do controller
+      if (response && response.status === 201) {
+        Alert.alert('Sucesso', 'Cadastro realizado com sucesso!');
+        navigation.navigate('Auth'); // Redireciona para a tela de Login
+      } else {
+        throw new Error('Erro ao registrar. Verifique os dados.');
+      }
     } catch (error) {
       Alert.alert('Erro', error.message || 'Erro ao realizar cadastro.');
     } finally {
-      setLoading(false); // Finaliza o carregamento
+      setLoading(false);
     }
   };
-
 
   return (
     <View style={styles.container}>
@@ -67,30 +65,34 @@ export default function Register({navigation}) {
       <View style={styles.body}>
         <Text style={styles.label}>Nome:</Text>
         <Input
-          onChangeText={setNome}
+          onChangeText={(text) => dispatch({ type: 'SET_FIRST_NAME', payload: text })}
           placeholder="Digite seu Nome"
+          value={state.firsName}
           containerStyle={styles.inputContainer}
           inputStyle={styles.input}
         />
         <Text style={styles.label}>Sobrenome:</Text>
         <Input
-          onChangeText={setSobrenome}
+          onChangeText={(text) => dispatch({ type: 'SET_LAST_NAME', payload: text })}
           placeholder="Digite seu Sobrenome"
+          value={state.lastName}
           containerStyle={styles.inputContainer}
           inputStyle={styles.input}
         />
         <Text style={styles.label}>Email:</Text>
         <Input
-          onChangeText={setEmail}
+          onChangeText={(text) => dispatch({ type: 'SET_EMAIL', payload: text })}
           placeholder="Digite seu Email"
+          value={state.email}
           containerStyle={styles.inputContainer}
           inputStyle={styles.input}
         />
         <Text style={styles.label}>Senha:</Text>
         <Input
-          onChangeText={setSenha}
+          onChangeText={(text) => dispatch({ type: 'SET_PASSWORD', payload: text })}
           placeholder="Digite sua Senha"
           secureTextEntry
+          value={state.password}
           containerStyle={styles.inputContainer}
           inputStyle={styles.input}
         />
@@ -106,7 +108,7 @@ export default function Register({navigation}) {
           title={loading ? 'Carregando...' : 'Registrar'}
           containerStyle={styles.buttonContainer}
           buttonStyle={styles.button}
-          onPress={handleRegister} // Chama a função de registro ao clicar no botão
+          onPress={handleRegister}
           disabled={loading}
         />
       </View>
