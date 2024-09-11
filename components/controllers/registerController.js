@@ -1,6 +1,6 @@
 import { api } from '../config/api';
 
-export async function signup({firsName, lastName, email, password, }) {
+export async function signup(firsName, lastName, email, password) {
   try {
     const response = await api.post('auth/sign-up', {
       firsName,
