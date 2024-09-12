@@ -28,7 +28,7 @@ export default function Register({ navigation }) {
     setLoading(true);
     try {
       const userData = {
-        firsName: state.firsName,
+        firstName: state.firstName,
         lastName: state.lastName,
         email: state.email,
         password: state.password,
@@ -67,7 +67,7 @@ export default function Register({ navigation }) {
         <Input
           onChangeText={(text) => dispatch({ type: 'SET_FIRST_NAME', payload: text })}
           placeholder="Digite seu Nome"
-          value={state.firsName}
+          value={state.firstName}
           containerStyle={styles.inputContainer}
           inputStyle={styles.input}
         />
