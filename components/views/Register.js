@@ -1,5 +1,5 @@
 import React, { useState, useReducer } from 'react';
-import { Text, View, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { Text, View, StyleSheet, TouchableOpacity, Alert, ScrollView } from 'react-native';
 import { Input, Button, Avatar } from '@rneui/themed';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { signup } from '../controllers/registerController';
@@ -27,19 +27,13 @@ export default function Register({ navigation }) {
 
     setLoading(true);
     try {
-      const userData = {
-        firstName: state.firstName,
-        lastName: state.lastName,
-        email: state.email,
-        password: state.password,
-      };
+      const response = await signup(state.firstName, state.lastName, state.email, state.password); // Chama a função signup do controller
 
-      const response = await signup(userData); // Chama a função signup do controller
-      if (response && response.status === 201) {
+      if (response.success) {
         Alert.alert('Sucesso', 'Cadastro realizado com sucesso!');
         navigation.navigate('Auth'); // Redireciona para a tela de Login
       } else {
-        throw new Error('Erro ao registrar. Verifique os dados.');
+        throw new Error(response.message || 'Erro ao registrar.');
       }
     } catch (error) {
       Alert.alert('Erro', error.message || 'Erro ao realizar cadastro.');
@@ -49,74 +43,80 @@ export default function Register({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
-      <TouchableOpacity onPress={handleChoosePhoto} style={styles.avatarContainer}>
-        <Avatar
-          size={100}
-          rounded
-          containerStyle={styles.avatar}
-          source={Foto ? { uri: Foto } : null}
-          icon={{ name: 'photo-library', type: 'material' }}
-        >
-          <Avatar.Accessory size={24} />
-        </Avatar>
-      </TouchableOpacity>
-      <Text style={styles.headerTextAvatar}>Foto</Text>
-      <View style={styles.body}>
-        <Text style={styles.label}>Nome:</Text>
-        <Input
-          onChangeText={(text) => dispatch({ type: 'SET_FIRST_NAME', payload: text })}
-          placeholder="Digite seu Nome"
-          value={state.firstName}
-          containerStyle={styles.inputContainer}
-          inputStyle={styles.input}
-        />
-        <Text style={styles.label}>Sobrenome:</Text>
-        <Input
-          onChangeText={(text) => dispatch({ type: 'SET_LAST_NAME', payload: text })}
-          placeholder="Digite seu Sobrenome"
-          value={state.lastName}
-          containerStyle={styles.inputContainer}
-          inputStyle={styles.input}
-        />
-        <Text style={styles.label}>Email:</Text>
-        <Input
-          onChangeText={(text) => dispatch({ type: 'SET_EMAIL', payload: text })}
-          placeholder="Digite seu Email"
-          value={state.email}
-          containerStyle={styles.inputContainer}
-          inputStyle={styles.input}
-        />
-        <Text style={styles.label}>Senha:</Text>
-        <Input
-          onChangeText={(text) => dispatch({ type: 'SET_PASSWORD', payload: text })}
-          placeholder="Digite sua Senha"
-          secureTextEntry
-          value={state.password}
-          containerStyle={styles.inputContainer}
-          inputStyle={styles.input}
-        />
-        <Text style={styles.label}>Confirmar Senha:</Text>
-        <Input
-          onChangeText={setConfirmar}
-          placeholder="Digite sua Senha"
-          secureTextEntry
-          containerStyle={styles.inputContainer}
-          inputStyle={styles.input}
-        />
-        <Button
-          title={loading ? 'Carregando...' : 'Registrar'}
-          containerStyle={styles.buttonContainer}
-          buttonStyle={styles.button}
-          onPress={handleRegister}
-          disabled={loading}
-        />
+    <ScrollView contentContainerStyle={styles.scrollViewContent}>
+      <View style={styles.container}>
+        <TouchableOpacity onPress={handleChoosePhoto} style={styles.avatarContainer}>
+          <Avatar
+            size={100}
+            rounded
+            containerStyle={styles.avatar}
+            source={Foto ? { uri: Foto } : null}
+            icon={{ name: 'photo-library', type: 'material' }}
+          >
+            <Avatar.Accessory size={24} />
+          </Avatar>
+        </TouchableOpacity>
+        <Text style={styles.headerTextAvatar}>Foto</Text>
+        <View style={styles.body}>
+          <Text style={styles.label}>Nome:</Text>
+          <Input
+            onChangeText={(text) => dispatch({ type: 'SET_FIRST_NAME', payload: text })}
+            placeholder="Digite seu Nome"
+            value={state.firstName}
+            containerStyle={styles.inputContainer}
+            inputStyle={styles.input}
+          />
+          <Text style={styles.label}>Sobrenome:</Text>
+          <Input
+            onChangeText={(text) => dispatch({ type: 'SET_LAST_NAME', payload: text })}
+            placeholder="Digite seu Sobrenome"
+            value={state.lastName}
+            containerStyle={styles.inputContainer}
+            inputStyle={styles.input}
+          />
+          <Text style={styles.label}>Email:</Text>
+          <Input
+            onChangeText={(text) => dispatch({ type: 'SET_EMAIL', payload: text })}
+            placeholder="Digite seu Email"
+            value={state.email}
+            containerStyle={styles.inputContainer}
+            inputStyle={styles.input}
+          />
+          <Text style={styles.label}>Senha:</Text>
+          <Input
+            onChangeText={(text) => dispatch({ type: 'SET_PASSWORD', payload: text })}
+            placeholder="Digite sua Senha"
+            secureTextEntry
+            value={state.password}
+            containerStyle={styles.inputContainer}
+            inputStyle={styles.input}
+          />
+          <Text style={styles.label}>Confirmar Senha:</Text>
+          <Input
+            onChangeText={setConfirmar}
+            placeholder="Digite sua Senha"
+            secureTextEntry
+            containerStyle={styles.inputContainer}
+            inputStyle={styles.input}
+          />
+          <Button
+            title={loading ? 'Carregando...' : 'Registrar'}
+            containerStyle={styles.buttonContainer}
+            buttonStyle={styles.button}
+            onPress={handleRegister}
+            disabled={loading}
+          />
+        </View>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
+  scrollViewContent: {
+    flexGrow: 1,
+    justifyContent: 'center',
+  },
   container: {
     flex: 1,
     justifyContent: 'center',

@@ -8,7 +8,20 @@ export async function signup(firstName, lastName, email, password) {
       email,
       password,
     });
-    return response.data;
+
+    // Verificar a estrutura da resposta
+    const { firstName: respFirstName, email: respEmail, uuid } = response.data;
+
+    if (!respFirstName || !respEmail || !uuid) {
+      throw new Error('Resposta do servidor com dados incompletos.');
+    }
+
+    // Retornar mensagem de sucesso junto com os dados
+    return {
+      success: true,
+      message: 'Registro realizado com sucesso!',
+      data: response.data,
+    };
   } catch (error) {
     console.error(error);
     if (error.response?.status === 500) {
