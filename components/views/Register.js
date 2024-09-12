@@ -27,19 +27,13 @@ export default function Register({ navigation }) {
 
     setLoading(true);
     try {
-      const userData = {
-        firstName: state.firstName,
-        lastName: state.lastName,
-        email: state.email,
-        password: state.password,
-      };
+      const response = await signup(state.firstName, state.lastName, state.email, state.password); // Chama a função signup do controller
 
-      const response = await signup(userData); // Chama a função signup do controller
-      if (response && response.status === 201) {
+      if (response.success) {
         Alert.alert('Sucesso', 'Cadastro realizado com sucesso!');
         navigation.navigate('Auth'); // Redireciona para a tela de Login
       } else {
-        throw new Error('Erro ao registrar. Verifique os dados.');
+        throw new Error(response.message || 'Erro ao registrar.');
       }
     } catch (error) {
       Alert.alert('Erro', error.message || 'Erro ao realizar cadastro.');
