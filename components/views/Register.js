@@ -1,125 +1,116 @@
-import React, { useState } from 'react';
-import { View, Text, Alert, StyleSheet, Image, TouchableOpacity } from 'react-native';
-import { Input, Button } from '@rneui/themed';
-import { handleRegister } from '../controllers/registerController';
+import React, { useState, useReducer } from 'react';
+import { Text, View, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { Input, Button, Avatar } from '@rneui/themed';
+import { launchImageLibrary } from 'react-native-image-picker';
+import { signup } from '../controllers/registerController';
+import { userReducer, initialState } from '../models/userModel'; // Importa o modelo de usuário
 
 export default function Register({ navigation }) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
+  const [state, dispatch] = useReducer(userReducer, initialState); // Usa o userReducer para gerenciar o estado
+  const [Confirmar, setConfirmar] = useState(''); // Estado separado para confirmar senha
+  const [Foto, setFoto] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const isValidEmail = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
+  const handleChoosePhoto = () => {
+    launchImageLibrary({ noData: true }, (response) => {
+      if (response.assets) {
+        setFoto(response.assets[0].uri);
+      }
+    });
   };
 
-  const register = async () => {
-    if (!isValidEmail(email)) {
-      Alert.alert('Erro', 'E-mail inválido');
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      Alert.alert('Erro', 'As senhas não coincidem');
+  const handleRegister = async () => {
+    if (state.password !== Confirmar) {
+      Alert.alert('Erro', 'As senhas não coincidem.');
       return;
     }
 
     setLoading(true);
     try {
-      await handleRegister({
-        email,
-        password,
-        firstName,
-        lastName,
-      });
-      setLoading(false);
-      Alert.alert('Sucesso', 'Registro realizado com sucesso!');
-      navigation.navigate('Auth');
+      const userData = {
+        firstName: state.firstName,
+        lastName: state.lastName,
+        email: state.email,
+        password: state.password,
+      };
+
+      const response = await signup(userData); // Chama a função signup do controller
+      if (response && response.status === 201) {
+        Alert.alert('Sucesso', 'Cadastro realizado com sucesso!');
+        navigation.navigate('Auth'); // Redireciona para a tela de Login
+      } else {
+        throw new Error('Erro ao registrar. Verifique os dados.');
+      }
     } catch (error) {
+      Alert.alert('Erro', error.message || 'Erro ao realizar cadastro.');
+    } finally {
       setLoading(false);
-      Alert.alert('Erro', error.message || 'Falha ao registrar');
     }
   };
 
   return (
     <View style={styles.container}>
-      <Image
-        style={styles.logo}
-        source={require('../../assets/logo.png')}
-        resizeMode="contain"
-      />
-      <View style={styles.inputContainer}>
-        <Input
-          onChangeText={setFirstName}
-          placeholder="Digite seu nome"
-          value={firstName}
-          inputContainerStyle={styles.inputContainerStyle}
-          inputStyle={styles.input}
-          placeholderTextColor="#A6A6A6"
-        />
-      </View>
-      <View style={styles.inputContainer}>
-        <Input
-          onChangeText={setLastName}
-          placeholder="Digite seu sobrenome"
-          value={lastName}
-          inputContainerStyle={styles.inputContainerStyle}
-          inputStyle={styles.input}
-          placeholderTextColor="#A6A6A6"
-        />
-      </View>
-      <View style={styles.inputContainer}>
-        <Input
-          onChangeText={setEmail}
-          placeholder="Digite seu e-mail"
-          value={email}
-          inputContainerStyle={styles.inputContainerStyle}
-          inputStyle={styles.input}
-          placeholderTextColor="#A6A6A6"
-        />
-      </View>
-      <View style={styles.inputContainer}>
-        <Input
-          onChangeText={setPassword}
-          placeholder="Digite sua senha"
-          secureTextEntry
-          value={password}
-          inputContainerStyle={styles.inputContainerStyle}
-          inputStyle={styles.input}
-          placeholderTextColor="#A6A6A6"
-        />
-      </View>
-      <View style={styles.inputContainer}>
-        <Input
-          onChangeText={setConfirmPassword}
-          placeholder="Confirme sua senha"
-          secureTextEntry
-          value={confirmPassword}
-          inputContainerStyle={styles.inputContainerStyle}
-          inputStyle={styles.input}
-          placeholderTextColor="#A6A6A6"
-        />
-      </View>
-      <Button
-        title="Registrar"
-        onPress={register}
-        loading={loading}
-        buttonStyle={styles.button}
-        titleStyle={styles.buttonTitle}
-        containerStyle={styles.buttonContainer}
-        loadingProps={{ color: '#FFFFFF' }}
-      />
-      <TouchableOpacity
-        style={styles.loginLink}
-        onPress={() => navigation.navigate('Auth')}
-      >
-        <Text style={styles.loginText}>Já tem uma conta? Faça login</Text>
+      <TouchableOpacity onPress={handleChoosePhoto} style={styles.avatarContainer}>
+        <Avatar
+          size={100}
+          rounded
+          containerStyle={styles.avatar}
+          source={Foto ? { uri: Foto } : null}
+          icon={{ name: 'photo-library', type: 'material' }}
+        >
+          <Avatar.Accessory size={24} />
+        </Avatar>
       </TouchableOpacity>
-      <View style={styles.footer}>
-        {/* Footer para receber outras informações no futuro */}
+      <Text style={styles.headerTextAvatar}>Foto</Text>
+      <View style={styles.body}>
+        <Text style={styles.label}>Nome:</Text>
+        <Input
+          onChangeText={(text) => dispatch({ type: 'SET_FIRST_NAME', payload: text })}
+          placeholder="Digite seu Nome"
+          value={state.firstName}
+          containerStyle={styles.inputContainer}
+          inputStyle={styles.input}
+        />
+        <Text style={styles.label}>Sobrenome:</Text>
+        <Input
+          onChangeText={(text) => dispatch({ type: 'SET_LAST_NAME', payload: text })}
+          placeholder="Digite seu Sobrenome"
+          value={state.lastName}
+          containerStyle={styles.inputContainer}
+          inputStyle={styles.input}
+        />
+        <Text style={styles.label}>Email:</Text>
+        <Input
+          onChangeText={(text) => dispatch({ type: 'SET_EMAIL', payload: text })}
+          placeholder="Digite seu Email"
+          value={state.email}
+          containerStyle={styles.inputContainer}
+          inputStyle={styles.input}
+        />
+        <Text style={styles.label}>Senha:</Text>
+        <Input
+          onChangeText={(text) => dispatch({ type: 'SET_PASSWORD', payload: text })}
+          placeholder="Digite sua Senha"
+          secureTextEntry
+          value={state.password}
+          containerStyle={styles.inputContainer}
+          inputStyle={styles.input}
+        />
+        <Text style={styles.label}>Confirmar Senha:</Text>
+        <Input
+          onChangeText={setConfirmar}
+          placeholder="Digite sua Senha"
+          secureTextEntry
+          containerStyle={styles.inputContainer}
+          inputStyle={styles.input}
+        />
+        <Button
+          title={loading ? 'Carregando...' : 'Registrar'}
+          containerStyle={styles.buttonContainer}
+          buttonStyle={styles.button}
+          onPress={handleRegister}
+          disabled={loading}
+        />
       </View>
     </View>
   );
@@ -129,57 +120,44 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f5f5f5',
-    padding: 16,
+    backgroundColor: '#fff',
   },
-  logo: {
-    width: 127,
-    height: 108,
-    marginBottom: 16,
+  avatarContainer: {
+    alignSelf: 'center',
+    marginTop: 20,
+  },
+  avatar: {
+    backgroundColor: '#4169e1',
+  },
+  headerTextAvatar: {
+    textAlign: 'center',
+    fontSize: 15,
+    color: '#333',
+  },
+  body: {
+    flex: 10,
+    width: '100%',
+    padding: 20,
+  },
+  label: {
+    fontSize: 15,
+    color: '#333',
+    paddingLeft: 10,
   },
   inputContainer: {
     width: '100%',
-    marginVertical: 8,
-  },
-  inputContainerStyle: {
-    borderBottomWidth: 0,
-    backgroundColor: '#F5F5F5',
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#D1D1D1',
+    marginBottom: 2,
   },
   input: {
-    fontSize: 18,
-    color: '#333',
-    paddingHorizontal: 12,
+    borderWidth: 1,
+    borderRadius: 8,
+    fontSize: 15,
+    padding: 10,
   },
   button: {
-    backgroundColor: '#007BFF',
+    width: 100,
+    alignSelf: 'center',
+    borderWidth: 1,
     borderRadius: 8,
-    height: 50,
-    justifyContent: 'center',
-  },
-  buttonTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  buttonContainer: {
-    width: '100%',
-    marginTop: 16,
-  },
-  loginLink: {
-    marginTop: 16,
-  },
-  loginText: {
-    color: '#007BFF',
-    textDecorationLine: 'underline',
-    fontSize: 16,
-    paddingHorizontal: 8,
-  },
-  footer: {
-    marginTop: 32,
   },
 });
- 
