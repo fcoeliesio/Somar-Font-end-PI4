@@ -1,16 +1,16 @@
 import { api } from '../config/api';
 
-
-export async function handleRegister({ email, password, firstName, lastName }) {
+export async function signup(firstName, lastName, email, password) {
   try {
     const response = await api.post('auth/sign-up', {
-      email,
-      password,
       firstName,
       lastName,
+      email,
+      password,
     });
     return response.data;
   } catch (error) {
+    console.error(error);
     if (error.response?.status === 500) {
       throw new Error('Não foi possível conectar ao banco de dados. Tente novamente mais tarde.');
     } else {

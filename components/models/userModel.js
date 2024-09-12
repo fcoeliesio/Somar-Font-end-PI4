@@ -1,12 +1,18 @@
 export const initialState = {
+  firstName: '', 
+  lastName: '', 
   email: '',
   password: '',
   accessToken: null,
-  refreshToken: null,
+  refreshToken: null,  
 };
 
 export function userReducer(state, action) {
   switch (action.type) {
+    case 'SET_FIRST_NAME':  
+      return { ...state, firstName: action.payload };  
+    case 'SET_LAST_NAME':    
+      return { ...state, lastName: action.payload };  
     case 'SET_EMAIL':
       return { ...state, email: action.payload };
     case 'SET_PASSWORD':
