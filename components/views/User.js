@@ -1,30 +1,103 @@
-import React, { useState } from 'react';
-import { Text, View, Button, Alert, StyleSheet } from 'react-native';
-import { handleLogout } from '../controllers/authController';
-import { useNavigation } from '@react-navigation/native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, Button, FlatList, StyleSheet, Alert } from 'react-native';
+import { useNavigation, useRoute } from '@react-navigation/native'; // Importa useRoute
+import { setAuthHeader, api } from '../config/api'; // Sua configuração de API
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function User({ route }) {
-  const { email, refreshToken } = route.params;
+export default function User() {
+  const [user, setUser] = useState(null);
+  const [token, setToken] = useState(null);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
-  const [loading, setLoading] = useState(false);
+  const route = useRoute(); // Obtém a rota atual
 
-  const logout = async () => {
-    setLoading(true);
+  useEffect(() => {
+    const loadUserData = async () => {
+      try {
+        const userData = await AsyncStorage.getItem('user');
+        const accessToken = await AsyncStorage.getItem('accessToken');
+        if (userData && accessToken) {
+          setUser(JSON.parse(userData));
+          setToken(accessToken);
+          setAuthHeader(accessToken); // Seta o token no header da API
+          fetchProducts(); // Carrega a lista de produtos
+        }
+      } catch (error) {
+        Alert.alert('Erro', 'Falha ao carregar os dados do usuário.');
+      }
+    };
+
+    const fetchProducts = async () => {
+      try {
+        const response = await api.get('products'); // Supondo que você tenha uma rota para listar produtos
+        setProducts(response.data); // Atualiza a lista de produtos
+      } catch (error) {
+        Alert.alert('Erro', 'Não foi possível carregar os produtos.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadUserData();
+  }, []);
+
+  const handleLogout = async () => {
     try {
-      await handleLogout(refreshToken);
-      Alert.alert('Sucesso', 'Você foi desconectado com sucesso.');
-      navigation.navigate('Auth'); // Redireciona para a tela de login
+      await AsyncStorage.clear();
+      setUser(null);
+      setToken(null); // Limpa o token do estado
+      navigation.navigate('Login'); // Redireciona para a tela de login
     } catch (error) {
-      Alert.alert('Erro', error.message || 'Falha ao sair');
-    } finally {
-      setLoading(false);
+      Alert.alert('Erro', 'Falha ao fazer logout.');
     }
   };
 
+  const handleNavigateToProduct = () => {
+    // Verifica se o token está presente antes de navegar
+    if (token) {
+      navigation.navigate('Product', { token }); // Passa o token para a tela de cadastro de produto
+    } else {
+      Alert.alert('Erro', 'Token não encontrado. Faça login novamente.');
+    }
+  };
+
+  // Obtém o e-mail dos parâmetros da rota
+  const { email } = route.params || {};
+
   return (
     <View style={styles.container}>
-      <Text style={styles.welcomeText}>Bem-vindo, {email}!</Text>
-      <Button title="Sair" onPress={logout} disabled={loading} />
+      {user ? (
+        <>
+          <Text style={styles.welcomeText}>
+            Bem-vindo{email ? `, ${email}` : ''}!
+          </Text>
+
+          {loading ? (
+            <Text>Carregando produtos...</Text>
+          ) : products.length > 0 ? (
+            <FlatList
+              data={products}
+              keyExtractor={(item) => item.uuid}
+              renderItem={({ item }) => (
+                <View style={styles.product}>
+                  <Text>{item.name}</Text>
+                  <Text>{item.sellingPrice}</Text>
+                </View>
+              )}
+            />
+          ) : (
+            <Text>Nenhum produto cadastrado.</Text>
+          )}
+
+          {/* Botão para cadastrar produto */}
+          <Button title="Cadastrar Produto" onPress={handleNavigateToProduct} />
+
+          <Button title="Logout" onPress={handleLogout} color="red" />
+        </>
+      ) : (
+        <Text>Carregando...</Text>
+      )}
     </View>
   );
 }
@@ -32,14 +105,17 @@ export default function User({ route }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 16,
-    backgroundColor: '#f5f5f5',
+    padding: 20,
+    backgroundColor: '#fff',
   },
   welcomeText: {
     fontSize: 20,
-    fontWeight: 'bold',
     marginBottom: 20,
+    textAlign: 'center',
+  },
+  product: {
+    padding: 10,
+    borderBottomWidth: 1,
+    borderColor: '#ccc',
   },
 });
