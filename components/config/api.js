@@ -19,9 +19,12 @@ export const setAuthHeader = async () => {
 
 api.interceptors.request.use(
   async (config) => {
-    const token = await AsyncStorage.getItem('accessToken');
-    if (token && config.url !== 'auth/sign-in') { // Excluir autenticação para 'auth/sign-in'
-      config.headers.Authorization = `Bearer ${token}`;
+    // Adiciona o token apenas se a URL não for 'auth/sign-in'
+    if (config.url !== 'auth/sign-in') {
+      const token = await AsyncStorage.getItem('accessToken');
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
     }
     return config;
   },

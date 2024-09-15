@@ -1,3 +1,5 @@
+// src/controllers/authController.js
+
 import { api } from '../config/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -14,13 +16,26 @@ export async function handleLogin(email, password) {
 
     return response.data; // { accessToken, refreshToken }
   } catch (error) {
-    console.error(error);
-    if (error.response?.status === 500) {
-      throw new Error('Não foi possível conectar ao banco de dados. Por favor, tente novamente mais tarde.');
-    } else {
-      const errorMessage = error.response?.data?.message || 'Login falhou';
-      throw new Error(errorMessage);
+    console.error('Erro ao fazer login:', error.response?.data || error.message);
+    throw new Error(error.response?.data?.message || 'Login falhou');
+  }
+}
+
+export async function refreshAccessToken() {
+  try {
+    const refreshToken = await AsyncStorage.getItem('refreshToken');
+    if (!refreshToken) {
+      throw new Error('Token de refresh não encontrado');
     }
+
+    const response = await api.post('auth/refresh', { refreshToken });
+    const { accessToken } = response.data;
+
+    await AsyncStorage.setItem('accessToken', accessToken);
+    return accessToken;
+  } catch (error) {
+    console.error('Refresh Token Error:', error.response ? error.response.data : error.message);
+    throw new Error(error.response?.data?.message || 'Falha ao atualizar o token de acesso');
   }
 }
 
@@ -31,12 +46,11 @@ export async function handleLogout() {
       throw new Error('Token de refresh não encontrado');
     }
 
-    const response = await api.post('auth/sign-out', { refreshToken });
+    await api.post('auth/sign-out', { refreshToken });
     await AsyncStorage.removeItem('accessToken');
     await AsyncStorage.removeItem('refreshToken');
-    
-    return response.data;
   } catch (error) {
+    console.error('Logout Error:', error.response ? error.response.data : error.message);
     throw new Error(error.response?.data?.message || 'Falha ao sair');
   }
 }
