@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Button, FlatList, StyleSheet, Alert } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native'; // Importa useRoute
-import { setAuthHeader, api } from '../config/api'; // Sua configuração de API
+import { setAuthHeader, api } from '../config/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function User() {
@@ -70,7 +70,7 @@ export default function User() {
       {user ? (
         <>
           <Text style={styles.welcomeText}>
-            Bem-vindo{email ? `, ${email}` : ''}!
+            Bem-vindo {email ? `, ${email}` : ''}!
           </Text>
 
           {loading ? (

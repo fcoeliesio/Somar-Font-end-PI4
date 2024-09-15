@@ -2,8 +2,8 @@ import { api, setAuthHeader } from '../config/api';
 
 export const createProduct = async (product, batch) => {
   try {
-    const token = 'userAccessToken'; // Substitua pelo token do usuário autenticado
-    setAuthHeader(token);
+    const accessToken = await AsyncStorage.getItem('accessToken');
+    setAuthHeader(accessToken);
 
     const response = await api.post('products', {
       batch: {
