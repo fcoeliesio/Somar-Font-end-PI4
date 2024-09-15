@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, Button, FlatList, StyleSheet } from 'react-native';
 import { fetchProducts } from '../controllers/productController'; // Função para buscar os produtos
 
-export default function User({ navigation }) {
+export default function User({ route, navigation }) {
+  const { email } = route.params;
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -24,7 +25,7 @@ export default function User({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.headerText}>Bem-vindo à página do usuário!</Text>
+      <Text style={styles.headerText}>Bem-vindo, {email}!</Text>
       
       <Button 
         title="Adicionar Produto"

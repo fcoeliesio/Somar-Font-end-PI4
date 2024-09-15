@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
-import { createProduct } from '../controllers/productController'; // Importa a função do controller
+import { createProduct } from '../controllers/productController';
 import { ScrollView } from 'react-native-gesture-handler';
-import { useRoute } from '@react-navigation/native'; // Para acessar os parâmetros da rota
+import { useRoute } from '@react-navigation/native';
 
 export default function Product({ navigation }) {
   const route = useRoute();
-  const token = route.params?.token; // Obtém o token da rota
+  const { token } = route.params || {}; // Obtém o token da rota
 
   const [product, setProduct] = useState({
     name: '',
@@ -30,7 +30,7 @@ export default function Product({ navigation }) {
 
     try {
       const response = await createProduct(product, batch, token); // Passa o token para a função do controller
-      Alert.alert('Sucesso', 'Produto cadastrado com sucesso!');
+      Alert.alert('Sucesso', response.message);
       navigation.goBack(); // Retorna à tela anterior após o cadastro
     } catch (error) {
       Alert.alert('Erro', error.message);

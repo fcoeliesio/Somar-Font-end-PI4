@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
   registerLink: {
     marginTop: 16,
     padding: 10,
-    alignItems: 'center', // Centraliza o conteúdo dentro do TouchableOpacity
+    alignItems: 'center',
   },
   registerText: {
     color: "#007BFF",

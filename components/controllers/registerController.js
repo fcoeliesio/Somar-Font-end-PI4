@@ -9,8 +9,19 @@ export const signup = async (firstName, lastName, email, password) => {
       password,
     });
 
-    return response.data; // Supondo que o backend retorne um objeto com "success"
+    if (response.data && response.data.uuid) {
+      return {
+        success: true,
+        data: response.data,
+        message: 'Cadastro realizado com sucesso!',
+      };
+    } else {
+      throw new Error('Dados de resposta inesperados');
+    }
   } catch (error) {
-    return { success: false, message: error.response?.data?.message || error.message };
+    return {
+      success: false,
+      message: error.response?.data?.message || error.message,
+    };
   }
 };
