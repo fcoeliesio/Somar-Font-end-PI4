@@ -1,12 +1,5 @@
 import React, { useState, useReducer } from "react";
-import {
-  View,
-  Text,
-  Alert,
-  StyleSheet,
-  Image,
-  TouchableOpacity,
-} from "react-native";
+import { View, Text, Alert, StyleSheet, Image, TouchableOpacity } from "react-native";
 import { Input, Button } from "@rneui/themed";
 import { userReducer, initialState } from "../models/userModel";
 import { handleLogin } from "../controllers/authController";

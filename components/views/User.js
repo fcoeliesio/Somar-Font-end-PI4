@@ -10,9 +10,14 @@ export default function User({ route, navigation }) {
   useEffect(() => {
     async function loadProducts() {
       setLoading(true);
-      const response = await fetchProducts(); // Função que busca os produtos da API
-      setProducts(response || []);
-      setLoading(false);
+      try {
+        const response = await fetchProducts(); // Função que busca os produtos da API
+        setProducts(response || []);
+      } catch (error) {
+        console.error('Erro ao carregar produtos:', error.message);
+      } finally {
+        setLoading(false);
+      }
     }
     loadProducts();
   }, []);

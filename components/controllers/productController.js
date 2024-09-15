@@ -1,5 +1,4 @@
 import { api, setAuthHeader } from '../config/api';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const createProduct = async (product, batch, token) => {
   try {
