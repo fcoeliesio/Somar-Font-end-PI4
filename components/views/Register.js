@@ -3,11 +3,11 @@ import { Text, View, StyleSheet, TouchableOpacity, Alert, ScrollView } from 'rea
 import { Input, Button, Avatar } from '@rneui/themed';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { signup } from '../controllers/registerController';
-import { userReducer, initialState } from '../models/userModel'; // Importa o modelo de usuário
+import { userReducer, initialState } from '../models/userModel';
 
 export default function Register({ navigation }) {
-  const [state, dispatch] = useReducer(userReducer, initialState); // Usa o userReducer para gerenciar o estado
-  const [Confirmar, setConfirmar] = useState(''); // Estado separado para confirmar senha
+  const [state, dispatch] = useReducer(userReducer, initialState);
+  const [Confirmar, setConfirmar] = useState('');
   const [Foto, setFoto] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -20,6 +20,8 @@ export default function Register({ navigation }) {
   };
 
   const handleRegister = async () => {
+    console.log('Tentando registrar...');
+
     if (state.password !== Confirmar) {
       Alert.alert('Erro', 'As senhas não coincidem.');
       return;
@@ -27,15 +29,17 @@ export default function Register({ navigation }) {
 
     setLoading(true);
     try {
-      const response = await signup(state.firstName, state.lastName, state.email, state.password); // Chama a função signup do controller
+      const response = await signup(state.firstName, state.lastName, state.email, state.password);
+      console.log('Resposta do signup:', response);
 
       if (response.success) {
         Alert.alert('Sucesso', 'Cadastro realizado com sucesso!');
-        navigation.navigate('Auth'); // Redireciona para a tela de Login
+        navigation.navigate('Auth');
       } else {
         throw new Error(response.message || 'Erro ao registrar.');
       }
     } catch (error) {
+      console.log('Erro ao registrar:', error);
       Alert.alert('Erro', error.message || 'Erro ao realizar cadastro.');
     } finally {
       setLoading(false);
