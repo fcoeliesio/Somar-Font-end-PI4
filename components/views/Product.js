@@ -1,13 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
 import { createProduct } from '../controllers/productController';
 import { ScrollView } from 'react-native-gesture-handler';
-import { useRoute } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Product({ navigation }) {
-  const route = useRoute();
-  const { token } = route.params || {}; // Obtém o token da rota
-
+  const [token, setToken] = useState(null);
   const [product, setProduct] = useState({
     name: '',
     image: '',
@@ -21,6 +19,20 @@ export default function Product({ navigation }) {
     amount: '',
     damaged: false,
   });
+
+  useEffect(() => {
+    async function loadToken() {
+      const storedToken = await AsyncStorage.getItem('accessToken');
+      if (storedToken) {
+        setToken(storedToken);
+      } else {
+        Alert.alert('Erro', 'Token não encontrado. Faça login novamente.');
+        navigation.goBack(); // Volta para a tela de login ou onde for necessário
+      }
+    }
+
+    loadToken();
+  }, []);
 
   const handleRegisterProduct = async () => {
     if (!token) {
