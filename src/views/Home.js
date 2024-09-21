@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
-import { Button, Input } from '@rneui/themed';
+import { Button, TextInput } from 'react-native-paper'; // Importa componentes do react-native-paper
 
 export default function Home({ navigation }) {
   return (
@@ -12,34 +12,16 @@ export default function Home({ navigation }) {
       />
       <Text style={styles.title}>Bem-vindo ao Somar Mencantil</Text>
       <Text style={styles.subtitle}>Sua solução completa na palma da mão</Text>
-      
+
       <Button
-        title="Ir para Login"
-        containerStyle={styles.buttonContainer}
-        buttonStyle={styles.button}
+        mode="contained" // Usando o modo "contained" para botões sólidos
+        style={styles.button} 
         onPress={() => navigation.navigate('Auth')}
-      />
+      >
+        Ir para Login
+      </Button>
 
-      {/* Campos de texto fictícios para uso futuro */}
-      <View style={styles.textFieldsContainer}>
-        <Input
-          placeholder="Campo de Texto 1"
-          containerStyle={styles.inputContainer}
-          inputStyle={styles.input}
-        />
-        <Input
-          placeholder="Campo de Texto 2"
-          containerStyle={styles.inputContainer}
-          inputStyle={styles.input}
-        />
-        <Input
-          placeholder="Campo de Texto 3"
-          containerStyle={styles.inputContainer}
-          inputStyle={styles.input}
-        />
-      </View>
-
-      
+      {/* Exemplo de campos de texto fictícios para uso futuro */}
     </ScrollView>
   );
 }
@@ -70,27 +52,20 @@ const styles = StyleSheet.create({
     marginBottom: 32,
     textAlign: 'center',
   },
-  textFieldsContainer: {
-    width: '100%',
-    marginBottom: 32,
-  },
-  inputContainer: {
-    marginBottom: 16,
-  },
   input: {
     fontSize: 16,
-    color: '#333',
-    backgroundColor: '#ffffff',
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
+    width: '80%',
+    marginBottom: 16,
+    backgroundColor: '#ffffff', // O background deve ser branco para TextInput do Paper
   },
   buttonContainer: {
     width: '80%',
     paddingBottom: 18,
   },
   button: {
-    backgroundColor: '#0386D0',
+    width: '80%',
+    marginVertical: 10,
     borderRadius: 8,
   },
 });
+

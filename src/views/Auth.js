@@ -1,6 +1,6 @@
 import React, { useState, useReducer } from "react";
 import { View, Text, Alert, StyleSheet, Image, TouchableOpacity } from "react-native";
-import { Input, Button } from "@rneui/themed";
+import { TextInput, Button } from "react-native-paper"; 
 import { userReducer, initialState } from "../models/userModel";
 import { handleLogin } from "../controllers/authController";
 
@@ -34,44 +34,43 @@ export default function Auth({ navigation }) {
       />
       <View style={styles.inputContainer}>
         <Image source={require("../../assets/mail.png")} resizeMode="contain" />
-        <Input
+        <TextInput
+          label="Digite seu e-mail"
+          mode="outlined"
           onChangeText={(text) =>
             dispatch({ type: "SET_EMAIL", payload: text })
           }
-          placeholder="Digite seu e-mail"
           value={state.email}
-          inputContainerStyle={styles.inputContainerStyle}
-          inputStyle={styles.input}
+          style={styles.input}
+          theme={{ colors: { primary: "#007BFF" } }} // Define a cor do tema
           placeholderTextColor="#A6A6A6"
-          leftIconContainerStyle={styles.iconContainer}
-          containerStyle={styles.inputFieldContainer}
         />
       </View>
       <View style={styles.inputContainer}>
         <Image source={require("../../assets/lock.png")} resizeMode="contain" />
-        <Input
+        <TextInput
+          label="Digite sua senha"
+          mode="outlined"
           onChangeText={(text) =>
             dispatch({ type: "SET_PASSWORD", payload: text })
           }
-          placeholder="Digite sua senha"
-          secureTextEntry
           value={state.password}
-          inputContainerStyle={styles.inputContainerStyle}
-          inputStyle={styles.input}
+          secureTextEntry
+          style={styles.input}
+          theme={{ colors: { primary: "#007BFF" } }} // Define a cor do tema
           placeholderTextColor="#A6A6A6"
-          leftIconContainerStyle={styles.iconContainer}
-          containerStyle={styles.inputFieldContainer}
         />
       </View>
       <Button
-        title="Entrar"
+        mode="contained" // Botão preenchido
         onPress={login}
         loading={loading}
-        buttonStyle={styles.button}
-        titleStyle={styles.buttonTitle}
-        containerStyle={styles.buttonContainer}
-        loadingProps={{ color: '#FFFFFF' }}
-      />
+        style={styles.button}
+        labelStyle={styles.buttonTitle}
+        contentStyle={{ height: 50 }} // Define a altura do botão
+      >
+        Entrar
+      </Button>
       <TouchableOpacity
         style={styles.registerLink}
         onPress={() => navigation.navigate("Register")}
@@ -102,40 +101,22 @@ const styles = StyleSheet.create({
     marginVertical: 8,
     width: '100%',
   },
-  inputFieldContainer: {
+  input: {
     flex: 1,
     marginLeft: 8,
-  },
-  inputContainerStyle: {
-    borderBottomWidth: 0,
-    backgroundColor: "#F5F5F5",
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#D1D1D1",
-  },
-  input: {
+    backgroundColor: '#ffffff',
     fontSize: 16,
-    color: "#333333",
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-  },
-  iconContainer: {
-    marginRight: 8,
   },
   button: {
     backgroundColor: "#007BFF",
     borderRadius: 8,
-    height: 50,
+    width: '100%',
+    marginTop: 16,
     justifyContent: "center",
   },
   buttonTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    textAlign: "center",
-  },
-  buttonContainer: {
-    marginTop: 16,
-    width: '100%',
   },
   registerLink: {
     marginTop: 16,

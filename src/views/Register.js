@@ -1,15 +1,18 @@
 import React, { useState, useReducer } from 'react';
 import { Text, View, StyleSheet, TouchableOpacity, Alert, ScrollView } from 'react-native';
-import { Input, Button, Avatar } from '@rneui/themed';
+import { TextInput, Button, Avatar } from 'react-native-paper';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { signup } from '../controllers/registerController';
 import { userReducer, initialState } from '../models/userModel';
 
 export default function Register({ navigation }) {
   const [state, dispatch] = useReducer(userReducer, initialState);
-  const [Confirmar, setConfirmar] = useState('');
-  const [Foto, setFoto] = useState(null);
+  const [confirmar, setConfirmar] = useState('');
+  const [foto, setFoto] = useState(null); // Estado para armazenar o link da foto.
   const [loading, setLoading] = useState(false);
+
+  // URL padrão para a imagem de avatar.
+  const defaultAvatarUrl = 'https://example.com/default-avatar.png'; // Substitua pelo link correto.
 
   const handleChoosePhoto = () => {
     launchImageLibrary({ noData: true }, (response) => {
@@ -22,7 +25,7 @@ export default function Register({ navigation }) {
   const handleRegister = async () => {
     console.log('Tentando registrar...');
 
-    if (state.password !== Confirmar) {
+    if (state.password !== confirmar) {
       Alert.alert('Erro', 'As senhas não coincidem.');
       return;
     }
@@ -50,66 +53,64 @@ export default function Register({ navigation }) {
     <ScrollView contentContainerStyle={styles.scrollViewContent}>
       <View style={styles.container}>
         <TouchableOpacity onPress={handleChoosePhoto} style={styles.avatarContainer}>
-          <Avatar
+          <Avatar.Image
             size={100}
-            rounded
-            containerStyle={styles.avatar}
-            source={Foto ? { uri: Foto } : null}
-            icon={{ name: 'photo-library', type: 'material' }}
-          >
-            <Avatar.Accessory size={24} />
-          </Avatar>
+            source={
+              foto
+                ? { uri: foto } // Exibir a foto selecionada se houver.
+                : { uri: defaultAvatarUrl } // Usar a URL da imagem padrão caso não haja foto.
+            }
+            style={styles.avatar}
+          />
         </TouchableOpacity>
         <Text style={styles.headerTextAvatar}>Foto</Text>
         <View style={styles.body}>
-          <Text style={styles.label}>Nome:</Text>
-          <Input
-            onChangeText={(text) => dispatch({ type: 'SET_FIRST_NAME', payload: text })}
-            placeholder="Digite seu Nome"
+          <TextInput
+            label="Nome"
+            mode="outlined"
             value={state.firstName}
-            containerStyle={styles.inputContainer}
-            inputStyle={styles.input}
+            onChangeText={(text) => dispatch({ type: 'SET_FIRST_NAME', payload: text })}
+            style={styles.input}
           />
-          <Text style={styles.label}>Sobrenome:</Text>
-          <Input
-            onChangeText={(text) => dispatch({ type: 'SET_LAST_NAME', payload: text })}
-            placeholder="Digite seu Sobrenome"
+          <TextInput
+            label="Sobrenome"
+            mode="outlined"
             value={state.lastName}
-            containerStyle={styles.inputContainer}
-            inputStyle={styles.input}
+            onChangeText={(text) => dispatch({ type: 'SET_LAST_NAME', payload: text })}
+            style={styles.input}
           />
-          <Text style={styles.label}>Email:</Text>
-          <Input
-            onChangeText={(text) => dispatch({ type: 'SET_EMAIL', payload: text })}
-            placeholder="Digite seu Email"
+          <TextInput
+            label="Email"
+            mode="outlined"
             value={state.email}
-            containerStyle={styles.inputContainer}
-            inputStyle={styles.input}
+            onChangeText={(text) => dispatch({ type: 'SET_EMAIL', payload: text })}
+            style={styles.input}
           />
-          <Text style={styles.label}>Senha:</Text>
-          <Input
-            onChangeText={(text) => dispatch({ type: 'SET_PASSWORD', payload: text })}
-            placeholder="Digite sua Senha"
+          <TextInput
+            label="Senha"
+            mode="outlined"
             secureTextEntry
             value={state.password}
-            containerStyle={styles.inputContainer}
-            inputStyle={styles.input}
+            onChangeText={(text) => dispatch({ type: 'SET_PASSWORD', payload: text })}
+            style={styles.input}
           />
-          <Text style={styles.label}>Confirmar Senha:</Text>
-          <Input
-            onChangeText={setConfirmar}
-            placeholder="Digite sua Senha"
+          <TextInput
+            label="Confirmar Senha"
+            mode="outlined"
             secureTextEntry
-            containerStyle={styles.inputContainer}
-            inputStyle={styles.input}
+            value={confirmar}
+            onChangeText={setConfirmar}
+            style={styles.input}
           />
           <Button
-            title={loading ? 'Carregando...' : 'Registrar'}
-            containerStyle={styles.buttonContainer}
-            buttonStyle={styles.button}
+            mode="contained"
             onPress={handleRegister}
+            loading={loading}
             disabled={loading}
-          />
+            style={styles.button}
+          >
+            {loading ? 'Carregando...' : 'Registrar'}
+          </Button>
         </View>
       </View>
     </ScrollView>
@@ -139,29 +140,14 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   body: {
-    flex: 10,
+    flex: 1,
     width: '100%',
     padding: 20,
   },
-  label: {
-    fontSize: 15,
-    color: '#333',
-    paddingLeft: 10,
-  },
-  inputContainer: {
-    width: '100%',
-    marginBottom: 2,
-  },
   input: {
-    borderWidth: 1,
-    borderRadius: 8,
-    fontSize: 15,
-    padding: 10,
+    marginBottom: 10,
   },
   button: {
-    width: 100,
-    alignSelf: 'center',
-    borderWidth: 1,
-    borderRadius: 8,
+    marginTop: 20,
   },
 });

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, Image, TouchableOpacity, Alert } from 'react-native';
+import { View, StyleSheet, FlatList, Alert } from 'react-native';
+import { Avatar, Text, Button, Card, ActivityIndicator, IconButton } from 'react-native-paper';
 import { fetchProducts } from '../controllers/productController';
-import { handleLogout } from '../controllers/authController'; // Importa a função de logout
+import { handleLogout } from '../controllers/authController';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Icon from 'react-native-vector-icons/MaterialIcons'; // Para os ícones dos botões
 
 export default function User({ navigation }) {
   const [user, setUser] = useState(null);
@@ -12,7 +12,6 @@ export default function User({ navigation }) {
   const [imageError, setImageError] = useState(false);
 
   useEffect(() => {
-    // Recupera os dados do usuário armazenados
     const loadUser = async () => {
       const userData = await AsyncStorage.getItem('user');
       if (userData) {
@@ -39,16 +38,18 @@ export default function User({ navigation }) {
 
   const handleLogoutPress = async () => {
     try {
-      await handleLogout(navigation); // Usa a função de logout do authController
+      await handleLogout(navigation);
     } catch (error) {
       Alert.alert('Erro ao sair', error.message);
     }
   };
 
   const renderProduct = ({ item }) => (
-    <View style={styles.productItem}>
-      <Text>{item.name}</Text>
-    </View>
+    <Card style={styles.productItem} onPress={() => navigation.navigate('ProductDetails', { item })}>
+      <Card.Content>
+        <Text variant="titleMedium">{item.name}</Text>
+      </Card.Content>
+    </Card>
   );
 
   return (
@@ -57,24 +58,36 @@ export default function User({ navigation }) {
       {user && (
         <View style={styles.userInfo}>
           <View style={styles.header}>
-            {!imageError && user.image && (
-              <Image
-                source={{ uri: user.image }} // Usa a imagem do usuário vinda do backend
-                style={styles.userImage}
-                onError={() => setImageError(true)} // Define que houve erro ao carregar a imagem
-              />
-            )}
-            <Text style={styles.welcomeText}>Bem-vindo, {user.firstName}!</Text>
-            {/* Botão de Logout */}
-            <TouchableOpacity style={styles.logoutButton} onPress={handleLogoutPress}>
-              <Icon name="logout" size={24} color="#fff" />
-            </TouchableOpacity>
+            <Avatar.Image
+              size={80}
+              source={
+                !imageError && user.image
+                  ? { uri: user.image }
+                  : { uri: 'https://example.com/default-avatar.png' }
+              }
+              onError={() => setImageError(true)}
+              style={styles.userImage}
+            />
+            <View style={styles.userDetails}>
+              <Text variant="headlineSmall" style={styles.welcomeText}>
+                Bem-vindo, {user.firstName}!
+              </Text>
+              <Button
+                mode="outlined"
+                onPress={handleLogoutPress}
+                style={styles.logoutButton}
+                labelStyle={{ color: '#E53935' }}
+                compact
+              >
+                Sair
+              </Button>
+            </View>
           </View>
         </View>
       )}
 
       {loading ? (
-        <Text>Carregando produtos...</Text>
+        <ActivityIndicator animating={true} size="large" style={styles.loadingIndicator} />
       ) : products.length === 0 ? (
         <Text>Nenhum produto encontrado.</Text>
       ) : (
@@ -82,16 +95,17 @@ export default function User({ navigation }) {
           data={products}
           renderItem={renderProduct}
           keyExtractor={(item) => item.id.toString()}
+          contentContainerStyle={styles.productList}
         />
       )}
 
-      {/* Botão flutuante de adicionar produto */}
-      <TouchableOpacity
+      <IconButton
+        icon="plus"
+        size={30}
+        color="#fff"
         style={styles.floatingButton}
         onPress={() => navigation.navigate('Product')}
-      >
-        <Icon name="add" size={30} color="#fff" />
-      </TouchableOpacity>
+      />
     </View>
   );
 }
@@ -100,37 +114,44 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
+    backgroundColor: '#fff',
   },
   header: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
     width: '100%',
+    paddingVertical: 10,
   },
   userInfo: {
     alignItems: 'center',
     marginBottom: 20,
   },
   userImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    marginBottom: 10,
+    backgroundColor: '#4169e1',
+  },
+  userDetails: {
+    marginLeft: 15,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   welcomeText: {
     fontSize: 18,
     fontWeight: 'bold',
+    marginRight: 10,
   },
   productItem: {
-    padding: 15,
-    borderBottomWidth: 1,
-    borderColor: '#ccc',
+    marginVertical: 5,
+    borderRadius: 8,
+    backgroundColor: '#f9f9f9',
+  },
+  productList: {
+    paddingBottom: 100,
   },
   floatingButton: {
     position: 'absolute',
     right: 20,
     bottom: 20,
-    backgroundColor: '#6200EE',
+    backgroundColor: '#d2d2d2',
     borderRadius: 50,
     width: 60,
     height: 60,
@@ -138,11 +159,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     elevation: 8,
   },
+  loadingIndicator: {
+    marginTop: 20,
+  },
   logoutButton: {
-    backgroundColor: '#E53935',
-    padding: 10,
-    borderRadius: 50,
-    justifyContent: 'center',
-    alignItems: 'center',
+    marginLeft: 5,
+    borderColor: '#E53935',
+    borderWidth: 1,
+    paddingVertical: 2,
+    paddingHorizontal: 5,
   },
 });

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TextInput, Button, StyleSheet, Alert } from "react-native";
+import { View, StyleSheet, Alert } from "react-native";
+import { TextInput, Button, Appbar, Text } from "react-native-paper";
 import { createProduct } from "../controllers/productController";
 import { ScrollView } from "react-native-gesture-handler";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -27,7 +28,7 @@ export default function Product({ navigation }) {
         setToken(storedToken);
       } else {
         Alert.alert("Erro", "Token não encontrado. Faça login novamente.");
-        navigation.jumpTo("Auth"); // Volta para a tela de login ou onde for necessário
+        navigation.jumpTo("Auth");
       }
     }
 
@@ -41,85 +42,87 @@ export default function Product({ navigation }) {
     }
 
     try {
-      const response = await createProduct(product, batch, token); // Passa o token para a função do controller
+      const response = await createProduct(product, batch, token);
       Alert.alert("Sucesso", response.message);
-      navigation.goBack(); // Retorna à tela anterior após o cadastro
+      navigation.goBack();
     } catch (error) {
       Alert.alert("Erro", error.message);
     }
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.label}>Nome do Produto:</Text>
-      <TextInput
-        style={styles.input}
-        value={product.name}
-        onChangeText={(text) => setProduct({ ...product, name: text })}
-        placeholder="Nome"
-      />
+    <View style={styles.container}>
+      <Appbar.Header>
+        <Appbar.BackAction onPress={() => navigation.goBack()} />
+        <Appbar.Content title="Cadastrar Produto" />
+      </Appbar.Header>
 
-      <Text style={styles.label}>Imagem:</Text>
-      <TextInput
-        style={styles.input}
-        value={product.image}
-        onChangeText={(text) => setProduct({ ...product, image: text })}
-        placeholder="URL da Imagem"
-      />
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <TextInput
+          label="Nome do Produto"
+          value={product.name}
+          onChangeText={(text) => setProduct({ ...product, name: text })}
+          style={styles.input}
+        />
 
-      <Text style={styles.label}>Preço de Venda:</Text>
-      <TextInput
-        style={styles.input}
-        keyboardType="numeric"
-        value={product.sellingPrice}
-        onChangeText={(text) => setProduct({ ...product, sellingPrice: text })}
-        placeholder="Preço de Venda"
-      />
+        <TextInput
+          label="Imagem"
+          value={product.image}
+          onChangeText={(text) => setProduct({ ...product, image: text })}
+          style={styles.input}
+          placeholder="URL da Imagem"
+        />
 
-      <Text style={styles.label}>Preço de Compra:</Text>
-      <TextInput
-        style={styles.input}
-        keyboardType="numeric"
-        value={product.buyingPrice}
-        onChangeText={(text) => setProduct({ ...product, buyingPrice: text })}
-        placeholder="Preço de Compra"
-      />
+        <TextInput
+          label="Preço de Venda"
+          keyboardType="numeric"
+          value={product.sellingPrice}
+          onChangeText={(text) => setProduct({ ...product, sellingPrice: text })}
+          style={styles.input}
+        />
 
-      <Text style={styles.label}>Código de Barras (Batch):</Text>
-      <TextInput
-        style={styles.input}
-        value={batch.barcode}
-        onChangeText={(text) => setBatch({ ...batch, barcode: text })}
-        placeholder="Código de Barras"
-      />
+        <TextInput
+          label="Preço de Compra"
+          keyboardType="numeric"
+          value={product.buyingPrice}
+          onChangeText={(text) => setProduct({ ...product, buyingPrice: text })}
+          style={styles.input}
+        />
 
-      <Text style={styles.label}>Quantidade (Batch):</Text>
-      <TextInput
-        style={styles.input}
-        keyboardType="numeric"
-        value={batch.amount}
-        onChangeText={(text) => setBatch({ ...batch, amount: text })}
-        placeholder="Quantidade"
-      />
+        <TextInput
+          label="Código de Barras (Batch)"
+          value={batch.barcode}
+          onChangeText={(text) => setBatch({ ...batch, barcode: text })}
+          style={styles.input}
+        />
 
-      <Button title="Cadastrar Produto" onPress={handleRegisterProduct} />
-    </ScrollView>
+        <TextInput
+          label="Quantidade (Batch)"
+          keyboardType="numeric"
+          value={batch.amount}
+          onChangeText={(text) => setBatch({ ...batch, amount: text })}
+          style={styles.input}
+        />
+
+        <Button mode="contained" onPress={handleRegisterProduct} style={styles.button}>
+          Cadastrar Produto
+        </Button>
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
+    flex: 1,
+  },
+  scrollContainer: {
     padding: 20,
   },
-  label: {
-    fontSize: 16,
-    marginBottom: 5,
-  },
   input: {
-    borderWidth: 1,
-    padding: 10,
-    marginBottom: 10,
-    borderRadius: 5,
+    marginBottom: 15,
+  },
+  button: {
+    marginTop: 10,
   },
 });
