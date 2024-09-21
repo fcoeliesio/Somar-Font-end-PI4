@@ -1,33 +1,33 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
-import { createProduct } from '../controllers/productController';
-import { ScrollView } from 'react-native-gesture-handler';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useState, useEffect } from "react";
+import { View, Text, TextInput, Button, StyleSheet, Alert } from "react-native";
+import { createProduct } from "../controllers/productController";
+import { ScrollView } from "react-native-gesture-handler";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Product({ navigation }) {
   const [token, setToken] = useState(null);
   const [product, setProduct] = useState({
-    name: '',
-    image: '',
-    sellingPrice: '',
-    buyingPrice: '',
+    name: "",
+    image: "",
+    sellingPrice: "",
+    buyingPrice: "",
     damaged: false,
   });
 
   const [batch, setBatch] = useState({
-    barcode: '',
-    amount: '',
+    barcode: "",
+    amount: "",
     damaged: false,
   });
 
   useEffect(() => {
     async function loadToken() {
-      const storedToken = await AsyncStorage.getItem('accessToken');
+      const storedToken = await AsyncStorage.getItem("accessToken");
       if (storedToken) {
         setToken(storedToken);
       } else {
-        Alert.alert('Erro', 'Token não encontrado. Faça login novamente.');
-        navigation.goBack(); // Volta para a tela de login ou onde for necessário
+        Alert.alert("Erro", "Token não encontrado. Faça login novamente.");
+        navigation.jumpTo("Auth"); // Volta para a tela de login ou onde for necessário
       }
     }
 
@@ -36,16 +36,16 @@ export default function Product({ navigation }) {
 
   const handleRegisterProduct = async () => {
     if (!token) {
-      Alert.alert('Erro', 'Token não encontrado. Faça login novamente.');
+      Alert.alert("Erro", "Token não encontrado. Faça login novamente.");
       return;
     }
 
     try {
       const response = await createProduct(product, batch, token); // Passa o token para a função do controller
-      Alert.alert('Sucesso', response.message);
+      Alert.alert("Sucesso", response.message);
       navigation.goBack(); // Retorna à tela anterior após o cadastro
     } catch (error) {
-      Alert.alert('Erro', error.message);
+      Alert.alert("Erro", error.message);
     }
   };
 
