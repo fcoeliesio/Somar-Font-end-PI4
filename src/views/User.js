@@ -29,6 +29,7 @@ export default function User({ navigation }) {
         setProducts(response || []);
       } catch (error) {
         console.error('Erro ao carregar produtos:', error.message);
+        Alert.alert('Erro', 'Não foi possível carregar os produtos.');
       } finally {
         setLoading(false);
       }
@@ -54,12 +55,11 @@ export default function User({ navigation }) {
 
   return (
     <View style={styles.container}>
-      {/* Barra do usuário */}
       {user && (
         <View style={styles.userInfo}>
           <View style={styles.header}>
             <Avatar.Image
-              size={80}
+              size={60} // Tamanho do avatar ajustado
               source={
                 !imageError && user.image
                   ? { uri: user.image }
@@ -89,7 +89,7 @@ export default function User({ navigation }) {
       {loading ? (
         <ActivityIndicator animating={true} size="large" style={styles.loadingIndicator} />
       ) : products.length === 0 ? (
-        <Text>Nenhum produto encontrado.</Text>
+        <Text style={styles.emptyList}>Nenhum produto encontrado.</Text>
       ) : (
         <FlatList
           data={products}
@@ -169,4 +169,11 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
     paddingHorizontal: 5,
   },
+  emptyList: {
+    textAlign: 'center',
+    marginTop: 32,
+    fontSize: 16,
+    color: '#777',
+  },
 });
+
