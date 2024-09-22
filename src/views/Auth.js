@@ -42,7 +42,7 @@ export default function Auth({ navigation }) {
           }
           value={state.email}
           style={styles.input}
-          theme={{ colors: { primary: "#007BFF" } }} // Define a cor do tema
+          theme={{ colors: { primary: "#007BFF" } }}
           placeholderTextColor="#A6A6A6"
         />
       </View>
@@ -57,17 +57,17 @@ export default function Auth({ navigation }) {
           value={state.password}
           secureTextEntry
           style={styles.input}
-          theme={{ colors: { primary: "#007BFF" } }} // Define a cor do tema
+          theme={{ colors: { primary: "#007BFF" } }}
           placeholderTextColor="#A6A6A6"
         />
       </View>
       <Button
-        mode="contained" // Botão preenchido
+        mode="contained"
         onPress={login}
         loading={loading}
         style={styles.button}
         labelStyle={styles.buttonTitle}
-        contentStyle={{ height: 50 }} // Define a altura do botão
+        contentStyle={{ height: 50 }}
       >
         Entrar
       </Button>

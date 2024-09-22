@@ -27,41 +27,47 @@ export async function handleLogin(email, password) {
 export async function handleLogout(navigation) {
   try {
     const refreshToken = await AsyncStorage.getItem("refreshToken");
-    console.log("Refresh Token:", refreshToken); // Depuração
 
     if (!refreshToken) {
       throw new Error("Refresh token não encontrado. Por favor, faça login novamente.");
     }
 
-    // Faz a requisição para a rota de logout enviando o refreshToken
     const response = await api.post("/auth/sign-out", { refreshToken });
-
-    // Verifica o status da resposta
-    if (response.status !== 200) {
+    
+    if (response.status !== 204) {
       throw new Error("Falha ao sair.");
     }
 
-    // Limpa o armazenamento local após o logout
-    await AsyncStorage.clear();
-
+    // Limpa o AsyncStorage
+    await AsyncStorage.removeItem("accessToken");
+    await AsyncStorage.removeItem("refreshToken");
+    await AsyncStorage.removeItem("user");
+    
     // Redireciona para a tela de login
     if (navigation) {
-      navigation.navigate("Auth");
+      console.log("Navegando para a tela de login");
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "Auth" }],
+      });
     }
-
-    return response.status;
   } catch (error) {
-    console.error("Erro ao realizar logout:", error.response?.data || error.message);
-    
-    // Verifica se o erro é de token expirado
-    if (error.response?.data?.message === "JWT expired") {
-      Alert.alert("Sessão expirada", "Por favor, faça login novamente.");
-      await AsyncStorage.clear();
-      if (navigation) {
-        navigation.navigate("Auth");
+    console.error("Erro ao realizar logout:", error.message);
+
+    if (error.response) {
+      console.error("Dados do erro:", error.response.data);
+      if (error.response.data.message === "JWT expired") {
+        Alert.alert("Sessão expirada", "Por favor, faça login novamente.");
+        await AsyncStorage.clear(); // Limpa tudo em caso de sessão expirada
+        if (navigation) {
+          navigation.reset({
+            index: 0,
+            routes: [{ name: "Auth" }],
+          });
+        }
       }
+    } else {
+      Alert.alert('Erro ao sair', error.message);
     }
-    
-    throw new Error(error.response?.data?.message || "Erro ao sair. Tente novamente.");
   }
 }

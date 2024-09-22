@@ -13,10 +13,12 @@ export default function User({ navigation }) {
 
   useEffect(() => {
     const loadUser = async () => {
+      setLoading(true); // Define loading antes de buscar o usuário
       const userData = await AsyncStorage.getItem('user');
       if (userData) {
         setUser(JSON.parse(userData));
       }
+      setLoading(false); // Define loading como falso após carregar os dados do usuário
     };
     loadUser();
   }, []);
@@ -40,6 +42,8 @@ export default function User({ navigation }) {
   const handleLogoutPress = async () => {
     try {
       await handleLogout(navigation);
+      setUser(null); // Limpa o estado do usuário
+      navigation.navigate('Auth'); // Redireciona para a tela de autenticação
     } catch (error) {
       Alert.alert('Erro ao sair', error.message);
     }
@@ -59,7 +63,7 @@ export default function User({ navigation }) {
         <View style={styles.userInfo}>
           <View style={styles.header}>
             <Avatar.Image
-              size={60} // Tamanho do avatar ajustado
+              size={60}
               source={
                 !imageError && user.image
                   ? { uri: user.image }
@@ -176,4 +180,3 @@ const styles = StyleSheet.create({
     color: '#777',
   },
 });
-
