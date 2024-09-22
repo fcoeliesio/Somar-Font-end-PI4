@@ -15,11 +15,11 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Home">
-        <Stack.Screen name="Home" component={Home} />
-        <Stack.Screen name="Auth" component={Auth} />
-        <Stack.Screen name="User" component={User} />
-        <Stack.Screen name="Register" component={Register} />
-        <Stack.Screen name="Product" component={Product} />
+        <Stack.Screen name="Home" component={Home} options={{ title: 'Página Inicial' }}/>
+        <Stack.Screen name="Auth" component={Auth} options={{ title: 'Autenticação' }}/>
+        <Stack.Screen name="User" component={User} options={{ title: 'Área de usuário' }}/>
+        <Stack.Screen name="Register" component={Register} options={{ title: 'Cadastre-se' }}/>
+        <Stack.Screen name="Product" component={Product} options={{ title: 'Cadastrar Produto' }}/>
         <Stack.Screen
           name="Inventory"
           component={Inventory}

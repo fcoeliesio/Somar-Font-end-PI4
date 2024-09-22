@@ -52,11 +52,6 @@ export default function Product({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Appbar.Header>
-        <Appbar.BackAction onPress={() => navigation.goBack()} />
-        <Appbar.Content title="Cadastrar Produto" />
-      </Appbar.Header>
-
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <TextInput
           label="Nome do Produto"
@@ -123,6 +118,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   button: {
+    backgroundColor: "#1254a4",
     marginTop: 10,
   },
 });

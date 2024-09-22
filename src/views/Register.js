@@ -109,7 +109,7 @@ export default function Register({ navigation }) {
             disabled={loading}
             style={styles.button}
           >
-            {loading ? 'Carregando...' : 'Registrar'}
+            {loading ? 'Carregando...' : 'Criar Cadastro'}
           </Button>
         </View>
       </View>
@@ -148,6 +148,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   button: {
+    backgroundColor: "#1254a4",
     marginTop: 20,
   },
 });
