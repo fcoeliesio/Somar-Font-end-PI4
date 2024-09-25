@@ -7,7 +7,7 @@ export const api = axios.create({
   baseURL: 'https://pi-4-back-end.onrender.com/api/v1',
   timeout: 30000,
 });
-
+/*
 export const setAuthHeader = async () => {
   try {
     const token = await AsyncStorage.getItem('accessToken');
@@ -34,3 +34,4 @@ api.interceptors.request.use(
     return Promise.reject(error);
   }
 );
+*/
